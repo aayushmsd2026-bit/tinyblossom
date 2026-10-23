@@ -2,26 +2,18 @@
 
 A simple, free online baby shop. Customers browse products, add them to a cart, and send the order by text message or WhatsApp. You reply with the final total (including shipping and any sales tax). Once they approve and pay, you ship it. There's no monthly cost and no payment company in the middle.
 
-## Changing products and prices: use the Google Sheet
+## Running the shop: the Google Sheets
 
-All products live in the **TinyBlossom Products** Google Sheet. Edit it from the Google Sheets app on your phone or on a computer. The website picks up changes within a few minutes, and there's nothing to save or publish.
+**TinyBlossom Shop** (shared as "Anyone with the link: Viewer"; the website reads it live, and changes appear within a few minutes):
 
-| Column | What to put |
-|---|---|
-| Product name | The name customers see |
-| Category | Any word, e.g. Clothing. A new category shows up as a new filter automatically |
-| Price | Just the number, e.g. `24.99` |
-| Was price | Optional. Fill it in to show a crossed-out "sale" price |
-| Sizes | Optional, separated by commas: `0-3m, 3-6m` |
-| In stock | `Yes`, `No` (shows "Sold out") or `Hide` (removes it from the site) |
-| Label | Optional little tag such as `New` or `Bestseller` |
-| Description | A sentence or two |
-| Photo link | Optional. Upload the photo to Google Drive, set it to "Anyone with the link", tap **Copy link**, and paste it here |
-| Emoji | Shown when there's no photo |
+- **Products tab:** one row per product. Dropdowns for Category, Status (In stock / Sold out / Coming soon / Hidden), Featured and Label. Optional columns: Sale price with Sale ends date (switches itself off), Stock left (shows "Only 2 left" and sells out at 0), Sizes, Age range, Material, Care, up to 3 photo links (gallery) and Sort order. Every column header has a note explaining it. Red cells mean something required is missing.
+- **Categories tab:** the dropdown list. A new row here becomes a new category on the site.
+- **Settings tab:** announcement bar, free-shipping amount, low-stock warning level, vacation mode (pauses ordering with a message), and the homepage headline and text.
+- **How to use tab:** a short guide.
 
-- **Add a product:** fill in a new row.
-- **Remove a product:** delete the row, or set In stock to `Hide`.
-- The sheet must stay shared as **"Anyone with the link: Viewer"**, or the site can't read it. If the site ever can't reach the sheet, it shows the backup list from `products.js` instead.
+**TinyBlossom Orders (private):** never share this publicly. An order log with status dropdowns (New, Awaiting payment, Paid, Shipped…), auto totals, and a Summary tab showing sales collected and how much sales tax to set aside.
+
+Don't rename tabs or row-1 headers; the website finds them by name. If the sheet can't be reached, the site shows the backup list in `products.js`.
 
 ## How an order works
 

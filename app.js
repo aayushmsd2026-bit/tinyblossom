@@ -105,24 +105,38 @@
     $("#shop").scrollIntoView({ behavior: "smooth" });
   });
 
+  const isLow = (p) => p.inStock && p.stock != null && p.stock <= lowStockAt;
+  function tagHtml(p) {
+    if (p.comingSoon) return `<span class="tag soon">Coming soon</span>`;
+    if (!p.inStock) return `<span class="tag out">Sold out</span>`;
+    if (isLow(p)) return `<span class="tag low">Only ${p.stock} left</span>`;
+    if (p.oldPrice) return `<span class="tag sale">${esc(p.badge || "Sale")}</span>`;
+    return p.badge ? `<span class="tag">${esc(p.badge)}</span>` : "";
+  }
+  const maxQty = (p) => Math.min(20, p.stock ?? 20);
+  const inBag = (id) => cart.filter((i) => i.id === id).reduce((n, i) => n + i.qty, 0);
+
   function renderGrid() {
     const q = query.trim().toLowerCase();
     let list = products.filter((p) => (filter === "All" || p.category === filter) &&
       (!q || `${p.name} ${p.category} ${p.description}`.toLowerCase().includes(q)));
+    if (sort === "featured") list = [...list].sort((a, b) =>
+      (b.featured - a.featured) || (a.comingSoon - b.comingSoon) || (b.inStock - a.inStock) ||
+      ((a.order ?? Infinity) - (b.order ?? Infinity)) || (a.row - b.row));
     if (sort === "low") list = [...list].sort((a, b) => a.price - b.price);
     if (sort === "high") list = [...list].sort((a, b) => b.price - a.price);
 
     const plus = '<svg width="16" height="16" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 2.5v11M2.5 8h11"/></svg>';
     $("#grid").innerHTML = list.map((p) => `
-      <article class="card${p.inStock ? "" : " sold-out"}">
+      <article class="card${p.inStock ? "" : p.comingSoon ? " coming-soon" : " sold-out"}">
         <div class="card-media tile ${tintOf(p.category)}">
           <button class="art" data-open="${p.id}" aria-label="View ${esc(p.name)}">${media(p)}</button>
-          ${!p.inStock ? `<span class="tag out">Sold out</span>` : p.oldPrice ? `<span class="tag sale">${esc(p.badge || "Sale")}</span>` : p.badge ? `<span class="tag">${esc(p.badge)}</span>` : ""}
+          ${tagHtml(p)}
           ${p.inStock ? `<button class="quick-add" ${p.sizes ? `data-open="${p.id}"` : `data-add="${p.id}"`} aria-label="${p.sizes ? "Choose size for" : "Add to bag:"} ${esc(p.name)}">${plus}</button>` : ""}
         </div>
         <div class="card-info">
           <button class="card-title" data-open="${p.id}">${esc(p.name)}</button>
-          <div class="card-meta">${p.sizes ? `${p.sizes.length} sizes` : esc(p.category)}</div>
+          <div class="card-meta">${esc(p.age || (p.sizes ? `${p.sizes.length} sizes` : p.category))}</div>
           ${priceHtml(p)}
         </div>
       </article>`).join("");
@@ -153,19 +167,28 @@
     let size = p.sizes ? null : "";
     let qty = 1;
     $("#pmBody").innerHTML = `
-      <div class="pm-media tile ${tintOf(p.category)}">${media(p)}</div>
+      <div class="pm-gallery">
+        <div class="pm-media tile ${tintOf(p.category)}" id="pmMain">${media(p)}</div>
+        ${p.photos.length > 1 ? `<div class="pm-thumbs">${p.photos.map((src, n) => `<button class="pm-thumb" data-photo="${n}" aria-pressed="${n === 0}" aria-label="Photo ${n + 1}"><img src="${esc(src)}" alt="" loading="lazy" /></button>`).join("")}</div>` : ""}
+      </div>
       <div class="pm-info">
-        <span class="pm-cat">${esc(p.category)}${p.badge ? ` · ${esc(p.badge)}` : ""}</span>
+        <span class="pm-cat">${esc(p.category)}${p.badge ? ` · ${esc(p.badge)}` : ""}${p.age ? ` · ${esc(p.age)}` : ""}</span>
         <h3 id="pmTitle">${esc(p.name)}</h3>
         ${priceHtml(p)}
         <span class="price-note">Plus shipping and tax, confirmed with you before you pay.</span>
+        ${isLow(p) ? `<span class="low-note">Only ${p.stock} left</span>` : ""}
         ${p.description ? `<p class="pm-desc">${esc(p.description)}</p>` : ""}
+        ${p.material || p.care || p.age ? `<dl class="pm-details">
+          ${p.age ? `<div><dt>Age</dt><dd>${esc(p.age)}</dd></div>` : ""}
+          ${p.material ? `<div><dt>Material</dt><dd>${esc(p.material)}</dd></div>` : ""}
+          ${p.care ? `<div><dt>Care</dt><dd>${esc(p.care)}</dd></div>` : ""}
+        </dl>` : ""}
         ${p.sizes ? `<span class="opt-label">Size</span><div class="sizes">${p.sizes.map((s) => `<button class="size" aria-pressed="false" data-size="${esc(s)}">${esc(s)}</button>`).join("")}</div>` : ""}
         ${p.inStock ? `
           <div class="pm-actions">
             <div class="qty" aria-label="Quantity"><button data-q="-1" aria-label="Decrease">−</button><span id="pmQty">1</span><button data-q="1" aria-label="Increase">+</button></div>
             <button class="btn btn-primary" id="pmAdd">${p.sizes ? "Select a size" : "Add to Bag"}</button>
-          </div>` : `<p class="sold-note">This one is sold out for now. Text us and we'll let you know when it's back.</p>`}
+          </div>` : `<p class="sold-note">${p.comingSoon ? "Coming soon. Text us and we'll let you know the moment it arrives." : "This one is sold out for now. Text us and we'll let you know when it's back."}</p>`}
       </div>`;
     const addBtn = $("#pmAdd");
     if (addBtn && p.sizes) addBtn.disabled = true;
@@ -173,6 +196,11 @@
     $("#pmBody").onclick = (e) => {
       const s = e.target.closest("[data-size]");
       const q = e.target.closest("[data-q]");
+      const ph = e.target.closest("[data-photo]");
+      if (ph) {
+        $("#pmMain").innerHTML = `<img src="${esc(p.photos[ph.dataset.photo])}" alt="${esc(p.name)}" />`;
+        $$(".pm-thumb", modal).forEach((b) => b.setAttribute("aria-pressed", b === ph));
+      }
       if (s) {
         size = s.dataset.size;
         $$(".size", modal).forEach((b) => b.setAttribute("aria-pressed", b === s));
@@ -180,7 +208,7 @@
         addBtn.textContent = "Add to Bag";
       }
       if (q) {
-        qty = Math.max(1, Math.min(20, qty + Number(q.dataset.q)));
+        qty = Math.max(1, Math.min(Math.max(1, maxQty(p) - inBag(p.id)), qty + Number(q.dataset.q)));
         $("#pmQty").textContent = qty;
       }
       if (e.target === addBtn && size !== null) {
@@ -198,8 +226,12 @@
   const key = (i) => `${i.id}|${i.size || ""}`;
 
   function addToCart(id, size, qty) {
+    const p = byId[id];
+    const room = maxQty(p) - inBag(id);
+    if (room <= 0) { toast(p.stock != null ? `Only ${p.stock} available` : "That's the most per order"); return; }
+    qty = Math.min(qty, room);
     const existing = cart.find((i) => key(i) === `${id}|${size || ""}`);
-    if (existing) existing.qty = Math.min(20, existing.qty + qty);
+    if (existing) existing.qty += qty;
     else cart.push({ id, size: size || "", qty });
     saveCart();
     toast(`Added to your bag`);
@@ -243,6 +275,9 @@
     $("#drawerFoot").hidden = empty && view !== "done";
     const t = totals();
     $("#delivery").textContent = t.free ? "Free shipping · tax by text" : "Confirmed by text";
+    $("#checkoutBtn").disabled = !!vacation;
+    $("#checkoutBtn").textContent = vacation ? "Ordering is paused" : "Check out";
+    $("#vacationNote").textContent = vacation || "";
     $("#total").textContent = money(t.subtotal);
     const remaining = SHOP.freeShippingOver - t.subtotal;
     $("#freeNote").textContent = SHOP.freeShippingOver > 0 && !empty
@@ -255,7 +290,12 @@
     if (!row) return;
     const item = cart.find((i) => key(i) === row.dataset.key);
     const d = e.target.closest("[data-d]");
-    if (d) item.qty = Math.max(1, Math.min(20, item.qty + Number(d.dataset.d)));
+    if (d) {
+      const p = byId[item.id];
+      const room = maxQty(p) - inBag(item.id) + item.qty;
+      if (Number(d.dataset.d) > 0 && item.qty >= room) toast(p.stock != null ? `Only ${p.stock} available` : "That's the most per order");
+      item.qty = Math.max(1, Math.min(room, item.qty + Number(d.dataset.d)));
+    }
     if (e.target.closest("[data-remove]")) cart = cart.filter((i) => i !== item);
     saveCart();
   });
@@ -394,66 +434,138 @@
     return m ? `https://drive.google.com/thumbnail?id=${m[1]}&sz=w800` : link;
   }
 
-  const num = (v) => parseFloat(String(v).replace(/[^0-9.]/g, ""));
+  const num = (v) => parseFloat(String(v).replace(/[^0-9.\-]/g, ""));
+  const yes = (v) => /^(yes|y|true|1|✓|x)$/i.test(String(v).trim());
+
+  // Sale ends at the end of the given day, local time.
+  function saleActive(ends) {
+    if (!ends) return true;
+    const d = new Date(ends);
+    if (isNaN(d)) return true;
+    d.setHours(23, 59, 59, 999);
+    return Date.now() <= d.getTime();
+  }
 
   function productsFromSheet(rows) {
     const head = rows.shift().map((h) => h.trim().toLowerCase());
     const col = (...names) => head.findIndex((h) => names.some((n) => h.startsWith(n)));
     const c = {
       name: col("product name", "name"), category: col("category"), price: col("price"),
-      oldPrice: col("was price", "old price", "original price"), sizes: col("sizes"),
-      stock: col("in stock", "stock"), badge: col("label", "badge"), description: col("description"),
-      photo: col("photo", "image"), emoji: col("emoji"),
+      sale: col("sale price"), saleEnds: col("sale ends"), oldPrice: col("was price", "old price"),
+      status: col("status", "in stock"), stock: col("stock left", "stock"), featured: col("featured"),
+      badge: col("label", "badge"), sizes: col("sizes"), age: col("age"), description: col("description"),
+      material: col("material"), care: col("care"), order: col("sort"),
     };
+    const photoCols = head.map((h, i) => (h.startsWith("photo") || h.startsWith("image") ? i : -1)).filter((i) => i >= 0);
     const get = (r, k) => (c[k] >= 0 ? (r[c[k]] || "").trim() : "");
     const used = new Set();
     return rows
-      .filter((r) => get(r, "name") && num(get(r, "price")) > 0 && !/^hid/i.test(get(r, "stock")))
-      .map((r, i) => {
-        let id = get(r, "name").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `item-${i}`;
+      .map((r, row) => ({ r, row }))
+      .filter(({ r }) => get(r, "name") && num(get(r, "price")) > 0 && !/^hid/i.test(get(r, "status")))
+      .map(({ r, row }) => {
+        let id = get(r, "name").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `item-${row}`;
         while (used.has(id)) id += "-2";
         used.add(id);
+
+        const regular = num(get(r, "price"));
+        const sale = num(get(r, "sale"));
+        const onSale = sale > 0 && sale < regular && saleActive(get(r, "saleEnds"));
+        const was = num(get(r, "oldPrice"));
+        const status = get(r, "status").toLowerCase();
+        const stockRaw = get(r, "stock");
+        const stock = stockRaw === "" || isNaN(num(stockRaw)) ? null : Math.max(0, Math.floor(num(stockRaw)));
+        const comingSoon = status.startsWith("coming");
+        const soldOut = /^(sold|no|n|false|out)/.test(status) || stock === 0;
         const sizes = get(r, "sizes").split(",").map((x) => x.trim()).filter(Boolean);
-        const old = num(get(r, "oldPrice"));
+        const photos = photoCols.map((i) => (r[i] || "").trim()).filter(Boolean).map(photoUrl);
+        const order = num(get(r, "order"));
+
         return {
           id,
+          row,
           name: get(r, "name"),
           category: get(r, "category") || "Other",
-          price: num(get(r, "price")),
-          oldPrice: old > 0 ? old : null,
-          sizes: sizes.length ? sizes : null,
-          inStock: !/^(no|n|false|sold)/i.test(get(r, "stock")),
+          price: onSale ? sale : regular,
+          oldPrice: onSale ? regular : was > regular ? was : null,
+          inStock: !soldOut && !comingSoon,
+          comingSoon,
+          stock,
+          featured: yes(get(r, "featured")),
+          order: isNaN(order) ? null : order,
           badge: get(r, "badge"),
+          sizes: sizes.length ? sizes : null,
+          age: get(r, "age"),
           description: get(r, "description"),
-          image: get(r, "photo") ? photoUrl(get(r, "photo")) : "",
-          emoji: get(r, "emoji") || "🌸",
-                  };
+          material: get(r, "material"),
+          care: get(r, "care"),
+          photos,
+          image: photos[0] || "",
+        };
       });
   }
 
-  async function loadProducts() {
+  async function fetchTab(id, tab) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    try {
+      const res = await fetch(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&headers=1&sheet=${encodeURIComponent(tab)}&_=${Date.now()}`, { signal: ctrl.signal });
+      if (!res.ok) throw new Error(`${tab}: ${res.status}`);
+      return parseCSV(await res.text());
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  async function loadShop() {
     const m = (SHOP.productsSheet || "").match(/\/d\/([\w-]+)/);
     if (m) {
+      const [prod, cats, sets] = await Promise.allSettled(["Products", "Categories", "Settings"].map((t) => fetchTab(m[1], t)));
       try {
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 8000);
-        const res = await fetch(`https://docs.google.com/spreadsheets/d/${m[1]}/gviz/tq?tqx=out:csv&headers=1&_=${Date.now()}`, { signal: ctrl.signal });
-        clearTimeout(timer);
-        if (!res.ok) throw new Error(res.status);
-        const list = productsFromSheet(parseCSV(await res.text()));
-        if (list.length) return list;
+        if (prod.status !== "fulfilled") throw prod.reason;
+        const list = productsFromSheet(prod.value);
+        if (list.length) {
+          const catOrder = cats.status === "fulfilled" ? cats.value.slice(1).map((r) => (r[0] || "").trim()).filter(Boolean) : [];
+          const settings = {};
+          if (sets.status === "fulfilled") sets.value.slice(1).forEach((r) => { if (r[0]) settings[r[0].trim().toLowerCase()] = (r[1] || "").trim(); });
+          return { list, catOrder, settings };
+        }
       } catch (err) {
         console.warn("Could not load the products sheet, using products.js instead.", err);
       }
     }
-    return PRODUCTS.map((p) => ({ ...p }));
+    return { list: PRODUCTS.map((p, row) => ({ ...p, row, photos: p.image ? [p.image] : [] })), catOrder: CATEGORIES, settings: {} };
   }
 
-  loadProducts().then((list) => {
+  /* ---------- Settings from the sheet ---------- */
+  let vacation = null;
+  let lowStockAt = 3;
+
+  function applySettings(st) {
+    const has = (k) => Object.prototype.hasOwnProperty.call(st, k);
+    if (has("free shipping over ($)")) SHOP.freeShippingOver = num(st["free shipping over ($)"]) || 0;
+    if (has("low stock warning at") && !isNaN(num(st["low stock warning at"]))) lowStockAt = num(st["low stock warning at"]);
+    if (st["homepage headline"]) $(".hero h1").textContent = st["homepage headline"];
+    if (st["homepage text"]) $(".hero .lead").textContent = st["homepage text"];
+    if (yes(st["vacation mode"])) vacation = st["vacation message"] || "Ordering is paused for a little while. Please check back soon.";
+
+    const bar = $("#announce");
+    if (vacation) {
+      bar.textContent = vacation;
+      bar.classList.add("vacation");
+    } else if (has("announcement bar")) {
+      bar.textContent = st["announcement bar"];
+    }
+    if (SHOP.freeShippingOver > 0 && !vacation && !st["announcement bar"]) bar.textContent = `Free US shipping on orders over ${money(SHOP.freeShippingOver)}`;
+  }
+
+  loadShop().then(({ list, catOrder, settings }) => {
+    applySettings(settings);
     products = list;
     byId = Object.fromEntries(products.map((p) => [p.id, p]));
-    categories = [...new Set(products.map((p) => p.category))];
-    cart = cart.filter((i) => byId[i.id]);
+    const present = new Set(products.map((p) => p.category));
+    categories = [...new Set([...catOrder.filter((c) => present.has(c)), ...products.map((p) => p.category)])];
+    cart = cart.filter((i) => byId[i.id] && byId[i.id].inStock).map((i) => ({ ...i, qty: Math.min(i.qty, maxQty(byId[i.id])) }));
+    store.set(cart);
     renderChips();
     renderGrid();
     renderCart();

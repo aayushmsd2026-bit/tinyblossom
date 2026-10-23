@@ -30,7 +30,7 @@ const SHOP = {
   // Link to the Google Sheet that lists the products and prices.
   // The sheet must be shared as "Anyone with the link: Viewer".
   // If it can't be reached, the products listed at the bottom of this file are shown instead.
-  productsSheet: "https://docs.google.com/spreadsheets/d/1hCV8NAPxs6GK89541TshvlNX2kjkiQ3CDqMqhBYML5k/edit",
+  productsSheet: "https://docs.google.com/spreadsheets/d/1nb7nsgXDGarhjHeBShW3LQkB9DlZW7BoG09Ap5pXbD8/edit",
 
   // Shipping and sales tax are worked out per order and texted to the customer
   // to approve before they pay. Optionally offer free shipping above an amount
