@@ -7,24 +7,34 @@ const SHOP = {
   name: "TinyBlossom",
   tagline: "Gentle things for tiny humans",
 
-  // Currency shown before prices, e.g. "Rs.", "$", "₹", "£"
-  currency: "Rs.",
+  // Currency shown before prices, e.g. "$", "£", "€"
+  currency: "$",
 
   // Orders are sent to this WhatsApp number (country code + number, digits only).
-  // Example for Nepal: "9779800000000". Leave "" to use email only.
-  whatsapp: "9779800000000",
+  // US numbers start with 1. Leave "" to turn WhatsApp ordering off.
+  whatsapp: "19296917782",
 
-  // Orders can also be sent by email.
-  email: "hello@example.com",
+  // Orders can also be sent as a normal text message (SMS) to this number.
+  // Leave "" to turn text ordering off.
+  sms: "+19296917782",
+
+  // Orders can also be sent by email. Leave "" to turn email ordering off.
+  email: "",
 
   // Shown in the footer / contact section
-  location: "Kathmandu, Nepal",
+  location: "United States",
   instagram: "",   // e.g. "https://instagram.com/tinyblossom"
   facebook: "",    // e.g. "https://facebook.com/tinyblossom"
 
-  // Delivery
-  deliveryFee: 100,
-  freeDeliveryOver: 3000, // set to 0 to turn off free delivery
+  // Delivery / shipping charge added to every order
+  deliveryFee: 5.99,       // set to 0 for always-free shipping
+  freeDeliveryOver: 50,    // orders at or above this get free shipping; 0 turns this off
+
+  // Payment choices shown at checkout. Add, remove or rename freely.
+  paymentOptions: [
+    "Zelle / Venmo / Cash App (we'll text you the details)",
+    "PayPal (we'll send you an invoice)",
+  ],
 };
 
 /* =========================================================
@@ -44,8 +54,8 @@ const PRODUCTS = [
     id: "onesie-set",
     name: "Organic Cotton Onesie Set (3 pack)",
     category: "Clothing",
-    price: 1450,
-    oldPrice: 1800,
+    price: 24.99,
+    oldPrice: 29.99,
     emoji: "👕",
     color: "#FCE7DC",
     image: "",
@@ -58,7 +68,7 @@ const PRODUCTS = [
     id: "knit-cap",
     name: "Hand-Knit Wool Cap",
     category: "Clothing",
-    price: 550,
+    price: 14.99,
     emoji: "🧢",
     color: "#E4EFE7",
     image: "",
@@ -71,7 +81,7 @@ const PRODUCTS = [
     id: "socks",
     name: "Non-Slip Baby Socks (5 pairs)",
     category: "Clothing",
-    price: 650,
+    price: 12.99,
     emoji: "🧦",
     color: "#E6ECF8",
     image: "",
@@ -83,7 +93,7 @@ const PRODUCTS = [
     id: "bottle",
     name: "Anti-Colic Feeding Bottle 240ml",
     category: "Feeding",
-    price: 900,
+    price: 14.99,
     emoji: "🍼",
     color: "#FFF4D6",
     image: "",
@@ -94,7 +104,7 @@ const PRODUCTS = [
     id: "bib-set",
     name: "Waterproof Silicone Bibs (2 pack)",
     category: "Feeding",
-    price: 750,
+    price: 12.99,
     emoji: "🥣",
     color: "#FCE7DC",
     image: "",
@@ -106,7 +116,7 @@ const PRODUCTS = [
     id: "spoons",
     name: "Soft-Tip Weaning Spoons (4 pack)",
     category: "Feeding",
-    price: 400,
+    price: 8.99,
     emoji: "🥄",
     color: "#E4EFE7",
     image: "",
@@ -117,7 +127,7 @@ const PRODUCTS = [
     id: "towel",
     name: "Hooded Bamboo Bath Towel",
     category: "Bath & Care",
-    price: 1200,
+    price: 22.99,
     emoji: "🛁",
     color: "#E6ECF8",
     image: "",
@@ -128,7 +138,7 @@ const PRODUCTS = [
     id: "lotion",
     name: "Gentle Baby Lotion 200ml",
     category: "Bath & Care",
-    price: 650,
+    price: 11.99,
     emoji: "🧴",
     color: "#FFF4D6",
     image: "",
@@ -139,8 +149,8 @@ const PRODUCTS = [
     id: "swaddle",
     name: "Muslin Swaddle Blanket",
     category: "Sleep",
-    price: 950,
-    oldPrice: 1150,
+    price: 18.99,
+    oldPrice: 22.99,
     emoji: "🌙",
     color: "#E6ECF8",
     image: "",
@@ -152,7 +162,7 @@ const PRODUCTS = [
     id: "sleeping-bag",
     name: "Cozy Sleeping Bag",
     category: "Sleep",
-    price: 2200,
+    price: 34.99,
     emoji: "😴",
     color: "#E4EFE7",
     image: "",
@@ -164,7 +174,7 @@ const PRODUCTS = [
     id: "teddy",
     name: "Plush Teddy Bear",
     category: "Toys",
-    price: 850,
+    price: 16.99,
     emoji: "🧸",
     color: "#FCE7DC",
     image: "",
@@ -175,7 +185,7 @@ const PRODUCTS = [
     id: "rattle",
     name: "Wooden Rattle & Teether",
     category: "Toys",
-    price: 500,
+    price: 9.99,
     emoji: "🪀",
     color: "#FFF4D6",
     image: "",

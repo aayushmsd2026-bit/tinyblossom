@@ -2,7 +2,7 @@
 (() => {
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
-  const money = (n) => `${SHOP.currency} ${Number(n).toLocaleString()}`;
+  const money = (n) => `${SHOP.currency}${Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   const byId = Object.fromEntries(PRODUCTS.map((p) => [p.id, p]));
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -21,16 +21,22 @@
   $(".tagline").textContent = SHOP.tagline;
   $("#year").textContent = new Date().getFullYear();
   $("#footerLoc").textContent = SHOP.location;
-  if (SHOP.freeDeliveryOver > 0) $("#announce").textContent = `Free delivery on orders over ${money(SHOP.freeDeliveryOver)} 🎉`;
+  if (SHOP.freeDeliveryOver > 0) $("#announce").textContent = `Free US shipping on orders over ${money(SHOP.freeDeliveryOver)} 🎉`;
   if (!SHOP.whatsapp) $("#sendWhatsapp").remove();
+  if (!SHOP.sms) $("#sendSms").remove();
   if (!SHOP.email) $("#sendEmail").remove();
 
   const links = [];
   if (SHOP.whatsapp) links.push(`<a class="btn btn-whatsapp" href="https://wa.me/${SHOP.whatsapp}" target="_blank" rel="noopener">WhatsApp</a>`);
+  if (SHOP.sms) links.push(`<a class="btn btn-ghost" href="sms:${SHOP.sms}">Text us</a>`);
   if (SHOP.email) links.push(`<a class="btn btn-ghost" href="mailto:${SHOP.email}">Email</a>`);
   if (SHOP.instagram) links.push(`<a class="btn btn-ghost" href="${SHOP.instagram}" target="_blank" rel="noopener">Instagram</a>`);
   if (SHOP.facebook) links.push(`<a class="btn btn-ghost" href="${SHOP.facebook}" target="_blank" rel="noopener">Facebook</a>`);
   $("#contactLinks").innerHTML = links.join("");
+
+  $("#payOptions").innerHTML = (SHOP.paymentOptions || []).map((o, i) =>
+    `<label class="radio"><input type="radio" name="payment" value="${esc(o)}"${i === 0 ? " checked" : ""} /> ${esc(o)}</label>`).join("");
+  $("#payOptions").closest("fieldset").hidden = !(SHOP.paymentOptions || []).length;
 
   /* ---------- Products ---------- */
   const media = (p) => p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" />` : `<span aria-hidden="true">${p.emoji}</span>`;
@@ -143,10 +149,10 @@
   }
 
   function totals() {
-    const subtotal = cart.reduce((s, i) => s + byId[i.id].price * i.qty, 0);
+    const subtotal = Math.round(cart.reduce((s, i) => s + byId[i.id].price * i.qty, 0) * 100) / 100;
     const free = SHOP.freeDeliveryOver > 0 && subtotal >= SHOP.freeDeliveryOver;
     const delivery = subtotal === 0 || free ? 0 : SHOP.deliveryFee;
-    return { subtotal, delivery, total: subtotal + delivery, free };
+    return { subtotal, delivery, total: Math.round((subtotal + delivery) * 100) / 100, free };
   }
 
   function saveCart() { store.set(cart); renderCart(); }
@@ -179,7 +185,7 @@
     $("#total").textContent = money(t.total);
     const remaining = SHOP.freeDeliveryOver - t.subtotal;
     $("#freeNote").textContent = SHOP.freeDeliveryOver > 0 && !empty
-      ? (t.free ? "You've got free delivery! 🎉" : `Add ${money(remaining)} more for free delivery`)
+      ? (t.free ? "You've got free shipping! 🎉" : `Add ${money(remaining)} more for free shipping`)
       : "";
   }
 
@@ -204,7 +210,7 @@
     $("#cartView").hidden = v !== "cart";
     $("#checkoutView").hidden = v !== "checkout";
     $("#doneView").hidden = v !== "done";
-    $("#drawerTitle").textContent = v === "checkout" ? "Delivery details" : v === "done" ? "Order sent" : "Your cart";
+    $("#drawerTitle").textContent = v === "checkout" ? "Shipping details" : v === "done" ? "Order sent" : "Your cart";
     $("#checkoutBtn").hidden = v !== "cart";
     $("#sendBtns").hidden = v !== "checkout";
     $(".totals").hidden = v === "done";
@@ -242,7 +248,7 @@
   const form = $("#checkoutView");
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const via = e.submitter?.dataset.via || (SHOP.whatsapp ? "whatsapp" : "email");
+    const via = e.submitter?.dataset.via || (SHOP.whatsapp ? "whatsapp" : SHOP.sms ? "sms" : "email");
     const data = Object.fromEntries(new FormData(form));
     let ok = true;
     ["name", "phone", "address"].forEach((n) => {
@@ -265,18 +271,18 @@
       ...lines,
       "",
       `Subtotal: ${money(t.subtotal)}`,
-      `Delivery: ${t.delivery ? money(t.delivery) : "Free"}`,
+      `Shipping: ${t.delivery ? money(t.delivery) : "Free"}`,
       `Total: ${money(t.total)}`,
       "",
       `Name: ${data.name}`,
       `Phone: ${data.phone}`,
       `Address: ${data.address}`,
-      `Payment: ${data.payment}`,
+      data.payment ? `Payment: ${data.payment}` : "",
       data.note ? `Note: ${data.note}` : "",
     ].filter((l, i, a) => !(l === "" && a[i - 1] === "")).join("\n").trim();
 
-    const url = via === "whatsapp"
-      ? `https://wa.me/${SHOP.whatsapp}?text=${encodeURIComponent(msg)}`
+    const url = via === "whatsapp" ? `https://wa.me/${SHOP.whatsapp}?text=${encodeURIComponent(msg)}`
+      : via === "sms" ? `sms:${SHOP.sms}?&body=${encodeURIComponent(msg)}`
       : `mailto:${SHOP.email}?subject=${encodeURIComponent(`New order from ${data.name}`)}&body=${encodeURIComponent(msg)}`;
     window.open(url, "_blank", "noopener");
 
