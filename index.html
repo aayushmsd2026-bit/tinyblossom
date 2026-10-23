@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TinyBlossom — Baby Shop</title>
-  <meta name="description" content="Soft, safe and gentle baby clothing, feeding, bath, sleep and toys. Order easily by text or WhatsApp." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>TinyBlossom — Gentle baby essentials</title>
+  <meta name="description" content="Soft clothing, feeding, bath and sleep essentials for babies, chosen with care. Order by text in seconds." />
+  <meta name="theme-color" content="#FBFAF7" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><g fill='%23A2545C'><circle cx='16' cy='8.5' r='5.5'/><circle cx='23.1' cy='13.7' r='5.5'/><circle cx='20.4' cy='22.1' r='5.5'/><circle cx='11.6' cy='22.1' r='5.5'/><circle cx='8.9' cy='13.7' r='5.5'/></g><circle cx='16' cy='16' r='3.2' fill='%23FBFAF7'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -18,17 +19,18 @@
 
   <header class="header">
     <div class="wrap header-inner">
-      <a href="#" class="logo"><span class="logo-mark" aria-hidden="true">🌸</span><span class="shop-name"></span></a>
+      <a href="#" class="logo" aria-label="TinyBlossom home">
+        <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><g><circle cx="16" cy="8.5" r="5.5"/><circle cx="23.1" cy="13.7" r="5.5"/><circle cx="20.4" cy="22.1" r="5.5"/><circle cx="11.6" cy="22.1" r="5.5"/><circle cx="8.9" cy="13.7" r="5.5"/></g><circle class="logo-eye" cx="16" cy="16" r="3.2"/></svg>
+        <span class="shop-name"></span>
+      </a>
       <nav class="nav" aria-label="Main">
         <a href="#shop">Shop</a>
-        <a href="#why">Why us</a>
-        <a href="#faq">FAQ</a>
-        <a href="#contact">Contact</a>
+        <a href="#how">How it works</a>
+        <a href="#faq">Help</a>
       </nav>
-      <button class="cart-btn" id="cartBtn" aria-label="Open cart">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        <span>Cart</span>
-        <span class="cart-count" id="cartCount">0</span>
+      <button class="bag-btn" id="cartBtn" aria-label="Open bag">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12.2a1 1 0 0 1-1 .8H7a1 1 0 0 1-1-.8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
+        <span class="bag-count" id="cartCount" hidden>0</span>
       </button>
     </div>
   </header>
@@ -36,160 +38,206 @@
   <main>
     <section class="hero">
       <div class="wrap hero-inner">
-        <div class="hero-text">
-          <p class="eyebrow">Soft · Safe · Thoughtfully chosen</p>
-          <h1><span class="tagline"></span></h1>
-          <p class="lead">Clothing, feeding, bath time and bedtime essentials, picked with care for your little one. Order in a few taps, and we'll ship it to your door.</p>
+        <div class="hero-copy">
+          <h1>Gentle essentials for the very beginning.</h1>
+          <p class="lead">Soft clothing, feeding and sleep essentials for your little one. Each item is chosen with care and shipped from our home to yours.</p>
           <div class="hero-cta">
-            <a href="#shop" class="btn btn-primary">Shop now</a>
-            <a href="#why" class="btn btn-ghost">Why parents love us</a>
+            <a href="#shop" class="btn btn-primary">Shop the collection</a>
+            <a href="#how" class="text-link">How ordering works <span aria-hidden="true">›</span></a>
           </div>
-          <ul class="hero-perks">
-            <li>🚚 Fast US shipping</li>
-            <li>💬 Order by text</li>
-            <li>🌿 Gentle materials</li>
-          </ul>
         </div>
-        <div class="hero-art" aria-hidden="true">
-          <div class="blob b1">🍼</div>
-          <div class="blob b2">🧸</div>
-          <div class="blob b3">👶</div>
-          <div class="blob b4">🌙</div>
-        </div>
+        <div class="hero-art" id="heroArt" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="cats" aria-labelledby="catsTitle">
+      <div class="wrap">
+        <h2 class="section-title" id="catsTitle">Shop by category</h2>
+        <div class="cat-row" id="catRow"></div>
       </div>
     </section>
 
     <section id="shop" class="shop">
       <div class="wrap">
-        <div class="section-head">
-          <h2>Shop our collection</h2>
-          <p>Tap any product to see details. Prices in USD; shipping &amp; tax are confirmed with you before you pay.</p>
+        <div class="shop-head">
+          <div>
+            <h2 class="section-title">The collection</h2>
+            <p class="section-sub">Prices in USD. Shipping and tax are confirmed with you before you pay.</p>
+          </div>
         </div>
 
         <div class="toolbar">
-          <div class="chips" id="chips" role="tablist" aria-label="Categories"></div>
+          <div class="segments" id="chips" role="tablist" aria-label="Categories"></div>
           <div class="toolbar-right">
             <label class="search">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-              <input id="search" type="search" placeholder="Search products" aria-label="Search products" />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input id="search" type="search" placeholder="Search" aria-label="Search products" />
             </label>
-            <select id="sort" aria-label="Sort products">
-              <option value="featured">Featured</option>
-              <option value="low">Price: low to high</option>
-              <option value="high">Price: high to low</option>
-            </select>
+            <label class="sort">
+              <span class="visually-hidden">Sort by</span>
+              <select id="sort">
+                <option value="featured">Featured</option>
+                <option value="low">Price: Low to High</option>
+                <option value="high">Price: High to Low</option>
+              </select>
+            </label>
           </div>
         </div>
 
         <div class="grid" id="grid"><p class="loading">Loading products…</p></div>
-        <p class="empty" id="empty" hidden>No products match your search. Try another word.</p>
+        <p class="empty" id="empty" hidden>Nothing matches that search. Try a different word.</p>
       </div>
     </section>
 
-    <section id="why" class="why">
+    <section id="how" class="how">
       <div class="wrap">
-        <div class="section-head"><h2>Why parents shop with us</h2></div>
-        <div class="why-grid">
-          <div class="why-card"><div class="why-icon">🌿</div><h3>Gentle on skin</h3><p>Soft, breathable fabrics and baby-safe materials only.</p></div>
-          <div class="why-card"><div class="why-icon">✅</div><h3>Hand-checked</h3><p>Every item is checked by us before it's packed.</p></div>
-          <div class="why-card"><div class="why-icon">🚚</div><h3>Shipped to you</h3><p>Packed with care and shipped fast anywhere in the US.</p></div>
-          <div class="why-card"><div class="why-icon">💬</div><h3>Real people</h3><p>Questions? Message us and a real person replies.</p></div>
+        <h2 class="section-title">How ordering works</h2>
+        <p class="section-sub">No accounts, no card details online. Just a quick text.</p>
+        <ol class="steps">
+          <li>
+            <span class="step-num">1</span>
+            <h3>Fill your bag</h3>
+            <p>Pick your favorites and sizes, then tap Checkout and add your shipping address.</p>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <h3>Send it by text</h3>
+            <p>Your order is written out for you. Just hit send. It comes straight to us.</p>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <h3>Approve and pay</h3>
+            <p>We text back your total with shipping. Once you approve and pay, we pack and ship it.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="promise">
+      <div class="wrap promise-inner">
+        <div>
+          <h3>Checked by hand</h3>
+          <p>Every piece is inspected before it's wrapped and sent.</p>
+        </div>
+        <div>
+          <h3>Kind to new skin</h3>
+          <p>Soft, breathable fabrics and baby-safe materials.</p>
+        </div>
+        <div>
+          <h3>Real people</h3>
+          <p>Questions about sizing or gifts? Text us and a person replies.</p>
         </div>
       </div>
     </section>
 
     <section id="faq" class="faq">
-      <div class="wrap narrow">
-        <div class="section-head"><h2>Questions? We've got answers</h2></div>
-        <details><summary>How do I place an order?</summary><p>Add items to your cart, tap <strong>Checkout</strong>, fill in your name, phone and address, then send. Your order comes to us by text message or WhatsApp, and we'll reply to confirm it and share payment details.</p></details>
-        <details><summary>How much is shipping?</summary><p>Shipping depends on your address and the size of your order, so we work it out for each order. After you send your order, we'll text you the exact total (including shipping and any sales tax). You only pay once you've approved it.</p></details>
-        <details><summary>How do I pay?</summary><p>After you approve your total, you can pay with Zelle, Venmo, Cash App or PayPal. We ship once payment arrives.</p></details>
-        <details><summary>How long does shipping take?</summary><p>Orders ship within 1–2 business days and usually arrive 3–5 days later. We'll send you tracking once it ships.</p></details>
-        <details><summary>Can I exchange a size?</summary><p>Yes. Unused items with tags can be exchanged or returned within <span data-return-days>14</span> days of delivery. Just message us. See our <a href="legal.html#returns">return policy</a>.</p></details>
-        <details><summary>Are your products safe for newborns?</summary><p>We choose BPA-free, non-toxic and skin-friendly items. Each product page tells you more about the materials. Please also read our <a href="legal.html#safety">safety tips</a>.</p></details>
+      <div class="wrap faq-inner">
+        <h2 class="section-title">Questions</h2>
+        <div class="faq-list">
+          <details><summary>How much is shipping?</summary><p>Shipping depends on your address and order size, so we work it out for each order. After you send your order, we'll text you the exact total, including shipping and any sales tax. You only pay once you've approved it.</p></details>
+          <details><summary>How do I pay?</summary><p>After you approve your total, you can pay with Zelle, Venmo, Cash App or PayPal. We ship as soon as payment arrives.</p></details>
+          <details><summary>How long does shipping take?</summary><p>Orders ship within 1–2 business days and usually arrive 3–5 days later. We'll text you tracking once it's on its way.</p></details>
+          <details><summary>Can I exchange a size?</summary><p>Yes. Unused items with tags can be exchanged or returned within <span data-return-days>14</span> days of delivery. Just text us. See our <a href="legal.html#returns">return policy</a>.</p></details>
+          <details><summary>Are your products safe for newborns?</summary><p>We choose BPA-free, non-toxic and skin-friendly items, and each product page describes its materials. Please also read our <a href="legal.html#safety">safety tips</a>.</p></details>
+        </div>
       </div>
     </section>
 
     <section id="contact" class="contact">
       <div class="wrap contact-inner">
-        <div>
-          <h2>Say hello 👋</h2>
-          <p>Need help choosing a gift or the right size? We're happy to help.</p>
-        </div>
+        <h2>Need a hand choosing?</h2>
+        <p>We're happy to help with sizes, gifts and anything else.</p>
         <div class="contact-links" id="contactLinks"></div>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <div class="wrap footer-inner">
-      <p>© <span id="year"></span> <span class="shop-name"></span>. Made with love.</p>
-      <nav class="footer-links" aria-label="Policies">
-        <a href="legal.html#terms">Terms of Sale</a>
-        <a href="legal.html#shipping">Shipping</a>
-        <a href="legal.html#returns">Returns</a>
-        <a href="legal.html#privacy">Privacy</a>
-        <a href="legal.html#safety">Safety</a>
-      </nav>
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <span class="shop-name"></span>
+          <p>Gentle essentials for the very beginning.</p>
+        </div>
+        <nav aria-label="Shop">
+          <h4>Shop</h4>
+          <a href="#shop">All products</a>
+          <a href="#how">How ordering works</a>
+          <a href="#faq">Questions</a>
+        </nav>
+        <nav aria-label="Policies">
+          <h4>Policies</h4>
+          <a href="legal.html#terms">Terms of Sale</a>
+          <a href="legal.html#shipping">Shipping</a>
+          <a href="legal.html#returns">Returns</a>
+          <a href="legal.html#privacy">Privacy</a>
+          <a href="legal.html#safety">Safety</a>
+        </nav>
+      </div>
+      <p class="footer-legal">© <span id="year"></span> <span class="shop-name"></span>. All rights reserved.</p>
     </div>
   </footer>
 
-  <!-- Product modal -->
+  <!-- Product sheet -->
   <dialog id="productModal" class="modal" aria-labelledby="pmTitle">
-    <button class="icon-btn close" data-close aria-label="Close">✕</button>
+    <button class="icon-btn close" data-close aria-label="Close">
+      <svg width="14" height="14" viewBox="0 0 14 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10M12 2 2 12"/></svg>
+    </button>
     <div class="pm" id="pmBody"></div>
   </dialog>
 
-  <!-- Cart drawer -->
+  <!-- Bag -->
   <div class="overlay" id="overlay" hidden></div>
-  <aside class="drawer" id="drawer" aria-label="Shopping cart" aria-hidden="true">
+  <aside class="drawer" id="drawer" aria-label="Bag" aria-hidden="true">
     <div class="drawer-head">
-      <h2 id="drawerTitle">Your cart</h2>
-      <button class="icon-btn" id="closeDrawer" aria-label="Close cart">✕</button>
+      <h2 id="drawerTitle">Your bag</h2>
+      <button class="icon-btn" id="closeDrawer" aria-label="Close bag">
+        <svg width="14" height="14" viewBox="0 0 14 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10M12 2 2 12"/></svg>
+      </button>
     </div>
 
     <div class="drawer-body" id="cartView">
       <div id="cartItems"></div>
       <div class="cart-empty" id="cartEmpty">
-        <div class="big">🧺</div>
-        <p>Your cart is empty.</p>
-        <button class="btn btn-ghost" id="keepShopping">Browse products</button>
+        <p class="cart-empty-title">Your bag is empty.</p>
+        <p>Browse the collection and add something lovely.</p>
+        <button class="btn btn-secondary" id="keepShopping">Start shopping</button>
       </div>
     </div>
 
     <form class="drawer-body checkout" id="checkoutView" hidden novalidate>
-      <button type="button" class="link-btn" id="backToCart">← Back to cart</button>
-      <label>Full name<input name="name" required autocomplete="name" /></label>
-      <label>Phone number<input name="phone" type="tel" required autocomplete="tel" /></label>
-      <label>Shipping address<textarea name="address" rows="3" required autocomplete="street-address" placeholder="Street, apt, city, state, ZIP"></textarea></label>
-      <label>Note (optional)<textarea name="note" rows="2" placeholder="Gift wrap, preferred time, etc."></textarea></label>
+      <button type="button" class="back-link" id="backToCart"><span aria-hidden="true">‹</span> Bag</button>
+      <div class="field"><label for="f-name">Full name</label><input id="f-name" name="name" required autocomplete="name" /></div>
+      <div class="field"><label for="f-phone">Mobile number</label><input id="f-phone" name="phone" type="tel" required autocomplete="tel" /></div>
+      <div class="field"><label for="f-address">Shipping address</label><textarea id="f-address" name="address" rows="3" required autocomplete="street-address" placeholder="Street, apartment, city, state, ZIP"></textarea></div>
+      <div class="field"><label for="f-note">Note <span class="optional">Optional</span></label><textarea id="f-note" name="note" rows="2" placeholder="Gift message, delivery notes…"></textarea></div>
       <fieldset class="pay">
-        <legend>Payment (after you approve your total)</legend>
+        <legend>How you'd like to pay <span class="optional">After you approve your total</span></legend>
         <div id="payOptions"></div>
       </fieldset>
-      <label class="agree"><input type="checkbox" name="agree" required /> <span>I agree to the <a href="legal.html#terms" target="_blank">Terms of Sale</a> and understand shipping and any sales tax will be added and confirmed with me before I pay.</span></label>
+      <label class="agree"><input type="checkbox" name="agree" required /> <span>I agree to the <a href="legal.html#terms" target="_blank">Terms of Sale</a> and understand shipping and any sales tax will be confirmed with me before I pay.</span></label>
       <p class="form-error" id="formError" role="alert"></p>
     </form>
 
     <div class="drawer-done drawer-body" id="doneView" hidden>
-      <div class="big">💛</div>
-      <h3>Thank you!</h3>
-      <p>Your order message is ready. Once you send it, we'll text you back with your total, including shipping, for you to approve. Nothing is charged until you say yes.</p>
-      <button class="btn btn-primary" id="doneBtn">Continue shopping</button>
+      <svg class="done-mark" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22"/><path d="M15 24.5l6 6 12-13"/></svg>
+      <h3>Almost there.</h3>
+      <p>Send the message that just opened. We'll text you back with your total, including shipping, to approve. Nothing is charged until you say yes.</p>
+      <button class="btn btn-secondary" id="doneBtn">Continue shopping</button>
     </div>
 
     <div class="drawer-foot" id="drawerFoot">
       <div class="totals">
+        <div><span>Items</span><span id="total"></span></div>
         <div><span>Shipping &amp; tax</span><span id="delivery"></span></div>
-        <div class="grand"><span>Items total</span><span id="total"></span></div>
-        <p class="ship-note">We'll text you your final total, including shipping, to approve before you pay.</p>
+        <p class="ship-note">We'll text you the final total to approve before you pay.</p>
         <p class="free-note" id="freeNote"></p>
       </div>
-      <button class="btn btn-primary btn-block" id="checkoutBtn">Checkout</button>
+      <button class="btn btn-primary btn-block" id="checkoutBtn">Check out</button>
       <div class="send-btns" id="sendBtns" hidden>
-        <button class="btn btn-primary btn-block" id="sendSms" form="checkoutView" type="submit" data-via="sms">Send order by text message</button>
-        <button class="btn btn-whatsapp btn-block" id="sendWhatsapp" form="checkoutView" type="submit" data-via="whatsapp">Send order on WhatsApp</button>
-        <button class="btn btn-ghost btn-block" id="sendEmail" form="checkoutView" type="submit" data-via="email">Send order by email</button>
+        <button class="btn btn-primary btn-block" id="sendSms" form="checkoutView" type="submit" data-via="sms">Send order by text</button>
+        <button class="btn btn-secondary btn-block" id="sendWhatsapp" form="checkoutView" type="submit" data-via="whatsapp">Send on WhatsApp instead</button>
+        <button class="btn btn-secondary btn-block" id="sendEmail" form="checkoutView" type="submit" data-via="email">Send by email instead</button>
       </div>
     </div>
   </aside>

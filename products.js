@@ -54,7 +54,7 @@ const SHOP = {
    - id: any unique short word (no spaces)
    - category: must match one of the CATEGORIES below
    - image: put a photo in the "images" folder and write e.g. "images/onesie.jpg".
-            Leave "" to show the cute emoji instead.
+            Leave "" to show a line drawing instead.
    - badge: optional little label like "New" or "Bestseller"
    - inStock: true or false
    ========================================================= */

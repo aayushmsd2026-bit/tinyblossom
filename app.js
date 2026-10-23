@@ -20,12 +20,11 @@
 
   /* ---------- Shop info ---------- */
   $$(".shop-name").forEach((el) => (el.textContent = SHOP.name));
-  $(".tagline").textContent = SHOP.tagline;
   $("#year").textContent = new Date().getFullYear();
   $$("[data-return-days]").forEach((el) => (el.textContent = SHOP.returnDays));
   $("#announce").textContent = SHOP.freeShippingOver > 0
-    ? `Free US shipping on orders over ${money(SHOP.freeShippingOver)} 🎉`
-    : "Order by text in seconds · Your total is confirmed before you pay 💬";
+    ? `Free US shipping on orders over ${money(SHOP.freeShippingOver)}`
+    : "Order by text. Your total is confirmed before you pay.";
   if (!SHOP.whatsapp) $("#sendWhatsapp").remove();
   if (!SHOP.sms) $("#sendSms").remove();
   if (!SHOP.email) $("#sendEmail").remove();
@@ -42,14 +41,69 @@
     `<label class="radio"><input type="radio" name="payment" value="${esc(o)}"${i === 0 ? " checked" : ""} /> ${esc(o)}</label>`).join("");
   $("#payOptions").closest("fieldset").hidden = !(SHOP.paymentOptions || []).length;
 
+  /* ---------- Illustrations ----------
+     Line drawings shown until a product has a real photo. */
+  const ICONS = {
+    onesie: '<path d="M25 9c1.5 3.5 4 5 7 5s5.5-1.5 7-5l9 4 6 11-7 4-4-6v24c0 3-2 5-5 6l-2 4h-8l-2-4c-3-1-5-3-5-6V22l-4 6-7-4 6-11z"/><path d="M29 50.5h6"/>',
+    cap: '<path d="M13 40c0-12 8.5-21 19-21s19 9 19 21"/><rect x="11" y="40" width="42" height="9" rx="3"/><circle cx="32" cy="14" r="5"/><path d="M22 40v9M32 40v9M42 40v9"/>',
+    socks: '<path d="M24 8h14v24l7 7c3.5 3.5 3.5 9 0 12.5s-9 3.5-12.5 0L24 43z"/><path d="M24 15h14"/>',
+    bottle: '<path d="M28 15c0-4 1.8-7 4-7s4 3 4 7"/><rect x="24" y="15" width="16" height="6" rx="1.5"/><path d="M25 21h14v31a4 4 0 0 1-4 4h-6a4 4 0 0 1-4-4z"/><path d="M25 31h5M25 38h5M25 45h5"/>',
+    bib: '<path d="M16 12h6c0 5.5 4.5 10 10 10s10-4.5 10-10h6c0 5-2 8-4 10v18c0 8-5.5 14-12 14s-12-6-12-14V22c-2-2-4-5-4-10z"/><path d="M26 43c3.5 3 8.5 3 12 0"/>',
+    spoon: '<ellipse cx="32" cy="19" rx="8" ry="11"/><path d="M32 30v25"/>',
+    towel: '<path d="M16 14h32"/><path d="M21 14v36a4 4 0 0 0 4 4h14a4 4 0 0 0 4-4V14"/><path d="M21 40h22M21 45h22"/>',
+    duck: '<circle cx="27" cy="21" r="9"/><path d="M18.5 22.5 11 24l6.5 3.5"/><path d="M28.5 19h.01" stroke-width="2.6"/><path d="M21 29.5C15 31 11 35 11 40c0 8.5 9 14 21 14s21-5.5 21-14c0-6-3-10-7-11.5-3 4-8 5.5-13 4.5"/><path d="M31 41c4 3 10 3 14-1"/>',
+    lotion: '<rect x="21" y="28" width="22" height="28" rx="3"/><path d="M28 28v-6h8v6M32 22v-8h9"/><path d="M27 38h10M27 44h7"/>',
+    moon: '<path d="M40 12a19 19 0 1 0 12 31A16 16 0 0 1 40 12z"/><path d="M47 15v5M44.5 17.5h5"/>',
+    sleepbag: '<path d="M22 10h20a6 6 0 0 1 6 6v32c0 5-7 8-16 8s-16-3-16-8V16a6 6 0 0 1 6-6z"/><path d="M26 10c0 4 2.5 6 6 6s6-2 6-6"/><path d="M38 23v25"/>',
+    bear: '<circle cx="21" cy="14" r="5"/><circle cx="43" cy="14" r="5"/><circle cx="32" cy="24" r="12"/><ellipse cx="32" cy="28.5" rx="4.5" ry="3.5"/><path d="M27.5 21.5h.01M36.5 21.5h.01" stroke-width="2.6"/><path d="M22 36c-5 3-8 8-8 13 0 5 6 7 18 7s18-2 18-7c0-5-3-10-8-13"/>',
+    rattle: '<circle cx="32" cy="21" r="12"/><path d="M32 33v14"/><circle cx="32" cy="51" r="4"/><path d="M25 17c1.5-2.5 4-4 7-4"/>',
+    blossom: '<circle cx="32" cy="18" r="8"/><circle cx="45.3" cy="27.7" r="8"/><circle cx="40.2" cy="43.3" r="8"/><circle cx="23.8" cy="43.3" r="8"/><circle cx="18.7" cy="27.7" r="8"/><circle cx="32" cy="32" r="3"/>',
+  };
+  const NAME_ICONS = [
+    [/onesie|bodysuit|romper|outfit|sleepsuit/, "onesie"], [/cap|hat|beanie|bonnet/, "cap"], [/sock|bootie|shoe/, "socks"],
+    [/bottle|sippy|cup/, "bottle"], [/\bbibs?\b/, "bib"], [/spoon|fork|bowl|plate/, "spoon"], [/towel|washcloth|robe/, "towel"],
+    [/lotion|cream|oil|shampoo|wash|balm|soap/, "lotion"], [/sleeping bag|sleep sack|sleepsack/, "sleepbag"],
+    [/swaddle|blanket|muslin|sheet/, "moon"], [/teddy|bear|plush|stuffed/, "bear"], [/rattle|teether|toy/, "rattle"],
+  ];
+  const CAT_ICONS = [[/cloth|wear|outfit/, "onesie"], [/feed/, "bottle"], [/bath|care/, "duck"], [/sleep/, "moon"], [/toy|play/, "bear"]];
+  const TINTS = ["blush", "sage", "mist", "stone"];
+
+  const catIcon = (c) => (CAT_ICONS.find(([re]) => re.test(c.toLowerCase())) || [, "blossom"])[1];
+  const iconFor = (p) => (NAME_ICONS.find(([re]) => re.test(p.name.toLowerCase())) || [, catIcon(p.category)])[1];
+  const tintOf = (c) => `tint-${TINTS[Math.max(0, categories.indexOf(c)) % TINTS.length]}`;
+  const svg = (name) => `<svg viewBox="0 0 64 64" aria-hidden="true">${ICONS[name]}</svg>`;
+  const media = (p) => p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" />` : svg(iconFor(p));
+  const priceHtml = (p) => `<div class="price${p.oldPrice ? " on-sale" : ""}"><span class="now">${money(p.price)}</span>${p.oldPrice ? `<span class="old">${money(p.oldPrice)}</span>` : ""}</div>`;
+
+  $("#heroArt").innerHTML = [["onesie", "blush"], ["bottle", "sage"], ["bear", "mist"]]
+    .map(([icon, tint]) => `<div class="tile tint-${tint}">${svg(icon)}</div>`).join("");
+
+  const header = $(".header");
+  addEventListener("scroll", () => header.classList.toggle("scrolled", scrollY > 8), { passive: true });
+
   /* ---------- Products ---------- */
-  const media = (p) => p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" />` : `<span aria-hidden="true">${p.emoji}</span>`;
 
   function renderChips() {
     $("#chips").innerHTML = ["All", ...categories]
-      .map((c) => `<button class="chip" role="tab" aria-selected="${c === filter}" data-cat="${esc(c)}">${esc(c)}</button>`)
+      .map((c) => `<button class="seg" role="tab" aria-selected="${c === filter}" data-cat="${esc(c)}">${esc(c)}</button>`)
       .join("");
+    $("#catRow").innerHTML = categories.map((c) => {
+      const n = products.filter((p) => p.category === c).length;
+      return `<button class="cat" data-cat="${esc(c)}"><div class="tile ${tintOf(c)}">${svg(catIcon(c))}</div><span class="cat-name">${esc(c)}</span><span class="cat-count">${n} item${n === 1 ? "" : "s"}</span></button>`;
+    }).join("");
   }
+
+  function setFilter(c) {
+    filter = c;
+    $$(".seg").forEach((b) => b.setAttribute("aria-selected", b.dataset.cat === c));
+    renderGrid();
+  }
+  $("#catRow").addEventListener("click", (e) => {
+    const b = e.target.closest(".cat");
+    if (!b) return;
+    setFilter(b.dataset.cat);
+    $("#shop").scrollIntoView({ behavior: "smooth" });
+  });
 
   function renderGrid() {
     const q = query.trim().toLowerCase();
@@ -58,39 +112,37 @@
     if (sort === "low") list = [...list].sort((a, b) => a.price - b.price);
     if (sort === "high") list = [...list].sort((a, b) => b.price - a.price);
 
+    const plus = '<svg width="16" height="16" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 2.5v11M2.5 8h11"/></svg>';
     $("#grid").innerHTML = list.map((p) => `
-      <article class="card">
-        <button class="card-media" style="background:${p.color}" data-open="${p.id}" aria-label="View ${esc(p.name)}">
-          ${media(p)}
-          ${!p.inStock ? `<span class="badge out">Sold out</span>` : p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ""}
-        </button>
-        <div class="card-body">
-          <span class="card-cat">${esc(p.category)}</span>
+      <article class="card${p.inStock ? "" : " sold-out"}">
+        <div class="card-media tile ${tintOf(p.category)}">
+          <button class="art" data-open="${p.id}" aria-label="View ${esc(p.name)}">${media(p)}</button>
+          ${!p.inStock ? `<span class="tag out">Sold out</span>` : p.oldPrice ? `<span class="tag sale">${esc(p.badge || "Sale")}</span>` : p.badge ? `<span class="tag">${esc(p.badge)}</span>` : ""}
+          ${p.inStock ? `<button class="quick-add" ${p.sizes ? `data-open="${p.id}"` : `data-add="${p.id}"`} aria-label="${p.sizes ? "Choose size for" : "Add to bag:"} ${esc(p.name)}">${plus}</button>` : ""}
+        </div>
+        <div class="card-info">
           <button class="card-title" data-open="${p.id}">${esc(p.name)}</button>
-          <div class="price">${money(p.price)}${p.oldPrice ? `<span class="old">${money(p.oldPrice)}</span>` : ""}</div>
-          <div class="card-foot">
-            ${!p.inStock ? `<button class="btn btn-ghost" disabled>Sold out</button>`
-              : p.sizes ? `<button class="btn btn-ghost" data-open="${p.id}">Choose size</button>`
-              : `<button class="btn btn-primary" data-add="${p.id}">Add to cart</button>`}
-          </div>
+          <div class="card-meta">${p.sizes ? `${p.sizes.length} sizes` : esc(p.category)}</div>
+          ${priceHtml(p)}
         </div>
       </article>`).join("");
     $("#empty").hidden = list.length > 0;
   }
 
   $("#chips").addEventListener("click", (e) => {
-    const b = e.target.closest(".chip");
-    if (!b) return;
-    filter = b.dataset.cat;
-    $$(".chip").forEach((c) => c.setAttribute("aria-selected", c === b));
-    renderGrid();
+    const b = e.target.closest(".seg");
+    if (b) setFilter(b.dataset.cat);
   });
   $("#search").addEventListener("input", (e) => { query = e.target.value; renderGrid(); });
   $("#sort").addEventListener("change", (e) => { sort = e.target.value; renderGrid(); });
   $("#grid").addEventListener("click", (e) => {
     const open = e.target.closest("[data-open]");
     const add = e.target.closest("[data-add]");
-    if (add) addToCart(add.dataset.add, null, 1);
+    if (add) {
+      addToCart(add.dataset.add, null, 1);
+      add.classList.add("added");
+      setTimeout(() => add.classList.remove("added"), 900);
+    }
     else if (open) openProduct(open.dataset.open);
   });
 
@@ -101,19 +153,19 @@
     let size = p.sizes ? null : "";
     let qty = 1;
     $("#pmBody").innerHTML = `
-      <div class="pm-media" style="background:${p.color}">${media(p)}</div>
+      <div class="pm-media tile ${tintOf(p.category)}">${media(p)}</div>
       <div class="pm-info">
-        <span class="card-cat">${esc(p.category)}</span>
+        <span class="pm-cat">${esc(p.category)}${p.badge ? ` · ${esc(p.badge)}` : ""}</span>
         <h3 id="pmTitle">${esc(p.name)}</h3>
-        <div class="price">${money(p.price)}${p.oldPrice ? `<span class="old">${money(p.oldPrice)}</span>` : ""}</div>
-        <span class="price-note">+ shipping &amp; tax, confirmed with you before you pay</span>
-        <p>${esc(p.description)}</p>
+        ${priceHtml(p)}
+        <span class="price-note">Plus shipping and tax, confirmed with you before you pay.</span>
+        ${p.description ? `<p class="pm-desc">${esc(p.description)}</p>` : ""}
         ${p.sizes ? `<span class="opt-label">Size</span><div class="sizes">${p.sizes.map((s) => `<button class="size" aria-pressed="false" data-size="${esc(s)}">${esc(s)}</button>`).join("")}</div>` : ""}
         ${p.inStock ? `
           <div class="pm-actions">
             <div class="qty" aria-label="Quantity"><button data-q="-1" aria-label="Decrease">−</button><span id="pmQty">1</span><button data-q="1" aria-label="Increase">+</button></div>
-            <button class="btn btn-primary" id="pmAdd">${p.sizes ? "Select a size" : "Add to cart"}</button>
-          </div>` : `<button class="btn btn-ghost" disabled>Sold out — message us to reserve</button>`}
+            <button class="btn btn-primary" id="pmAdd">${p.sizes ? "Select a size" : "Add to Bag"}</button>
+          </div>` : `<p class="sold-note">This one is sold out for now. Text us and we'll let you know when it's back.</p>`}
       </div>`;
     const addBtn = $("#pmAdd");
     if (addBtn && p.sizes) addBtn.disabled = true;
@@ -125,7 +177,7 @@
         size = s.dataset.size;
         $$(".size", modal).forEach((b) => b.setAttribute("aria-pressed", b === s));
         addBtn.disabled = false;
-        addBtn.textContent = "Add to cart";
+        addBtn.textContent = "Add to Bag";
       }
       if (q) {
         qty = Math.max(1, Math.min(20, qty + Number(q.dataset.q)));
@@ -150,7 +202,7 @@
     if (existing) existing.qty = Math.min(20, existing.qty + qty);
     else cart.push({ id, size: size || "", qty });
     saveCart();
-    toast(`Added ${byId[id].name} 🌸`);
+    toast(`Added to your bag`);
     const btn = $("#cartBtn");
     btn.classList.remove("bump"); void btn.offsetWidth; btn.classList.add("bump");
   }
@@ -166,19 +218,23 @@
   function renderCart() {
     const count = cart.reduce((s, i) => s + i.qty, 0);
     $("#cartCount").textContent = count;
-    $("#cartBtn").setAttribute("aria-label", `Open cart, ${count} items`);
+    $("#cartCount").hidden = count === 0;
+    $("#cartBtn").setAttribute("aria-label", `Open bag, ${count} items`);
     $("#cartItems").innerHTML = cart.map((i) => {
       const p = byId[i.id];
       return `
         <div class="cart-item" data-key="${esc(key(i))}">
-          <div class="ci-thumb" style="background:${p.color}">${media(p)}</div>
+          <div class="ci-thumb tile ${tintOf(p.category)}">${media(p)}</div>
           <div>
-            <div class="ci-name">${esc(p.name)}</div>
-            <div class="ci-meta">${i.size ? `Size ${esc(i.size)} · ` : ""}${money(p.price)}</div>
-          </div>
-          <div class="ci-right">
-            <div class="qty"><button data-d="-1" aria-label="Decrease">−</button><span>${i.qty}</span><button data-d="1" aria-label="Increase">+</button></div>
-            <button class="ci-remove" data-remove>Remove</button>
+            <div class="ci-top">
+              <div class="ci-name">${esc(p.name)}</div>
+              <div class="ci-price">${money(p.price * i.qty)}</div>
+            </div>
+            <div class="ci-meta">${i.size ? `Size ${esc(i.size)}` : esc(p.category)}${i.qty > 1 ? ` · ${money(p.price)} each` : ""}</div>
+            <div class="ci-bottom">
+              <div class="qty"><button data-d="-1" aria-label="Decrease">−</button><span>${i.qty}</span><button data-d="1" aria-label="Increase">+</button></div>
+              <button class="ci-remove" data-remove>Remove</button>
+            </div>
           </div>
         </div>`;
     }).join("");
@@ -186,11 +242,11 @@
     $("#cartEmpty").hidden = !empty;
     $("#drawerFoot").hidden = empty && view !== "done";
     const t = totals();
-    $("#delivery").textContent = t.free ? "Free shipping + tax" : "Quoted after order";
+    $("#delivery").textContent = t.free ? "Free shipping · tax by text" : "Confirmed by text";
     $("#total").textContent = money(t.subtotal);
     const remaining = SHOP.freeShippingOver - t.subtotal;
     $("#freeNote").textContent = SHOP.freeShippingOver > 0 && !empty
-      ? (t.free ? "You've got free shipping! 🎉" : `Add ${money(remaining)} more for free shipping`)
+      ? (t.free ? "Your order ships free." : `Add ${money(remaining)} more for free shipping`)
       : "";
   }
 
@@ -215,7 +271,7 @@
     $("#cartView").hidden = v !== "cart";
     $("#checkoutView").hidden = v !== "checkout";
     $("#doneView").hidden = v !== "done";
-    $("#drawerTitle").textContent = v === "checkout" ? "Shipping details" : v === "done" ? "Order sent" : "Your cart";
+    $("#drawerTitle").textContent = v === "checkout" ? "Checkout" : v === "done" ? "" : "Your bag";
     $("#checkoutBtn").hidden = v !== "cart";
     $("#sendBtns").hidden = v !== "checkout";
     $(".totals").hidden = v === "done";
@@ -312,8 +368,6 @@
   }
 
   /* ---------- Load products from the Google Sheet ---------- */
-  const PASTELS = ["#FCE7DC", "#E4EFE7", "#E6ECF8", "#FFF4D6"];
-
   function parseCSV(text) {
     const rows = [];
     let row = [], field = "", quoted = false;
@@ -373,8 +427,7 @@
           description: get(r, "description"),
           image: get(r, "photo") ? photoUrl(get(r, "photo")) : "",
           emoji: get(r, "emoji") || "🌸",
-          color: PASTELS[i % PASTELS.length],
-        };
+                  };
       });
   }
 
