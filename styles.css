@@ -19,6 +19,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { scroll-behavior: smooth; overflow-x: clip; }
 body {
   margin: 0;
@@ -193,6 +194,16 @@ details p { margin: 0 0 16px; color: var(--muted); }
 .big { font-size: 3.5rem; }
 .totals > div { display: flex; justify-content: space-between; color: var(--muted); }
 .totals .grand { color: var(--ink); font-weight: 800; font-size: 1.15rem; margin-top: 4px; }
+#checkoutView:not([hidden]) ~ .drawer-foot .ship-note { display: none; }
+.ship-note { margin: 6px 0 0; font-size: .82rem; color: var(--muted); line-height: 1.4; }
+.loading { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 40px 0; }
+.price-note { font-size: .82rem; color: var(--muted); }
+.checkout .agree { flex-direction: row; align-items: flex-start; gap: 10px; font-weight: 600; font-size: .85rem; line-height: 1.45; }
+.checkout .agree input { margin-top: 3px; width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--primary); }
+.checkout .agree.invalid span { color: var(--primary-dark); }
+.footer-links { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.footer-links a { color: var(--muted); text-decoration: none; }
+.footer-links a:hover { color: var(--ink); text-decoration: underline; }
 .free-note { margin: 6px 0 0; font-size: .85rem; color: var(--sage); font-weight: 700; }
 .free-note:empty { display: none; }
 .send-btns { display: flex; flex-direction: column; gap: 10px; }
@@ -242,3 +253,18 @@ body.locked { overflow: hidden; }
 @media (max-width: 380px) {
   .cart-btn span:not(.cart-count) { display: none; }
 }
+
+/* Policies page */
+.back-shop { margin-left: auto; padding: 8px 16px; }
+.legal { padding: 40px 16px 64px; }
+.legal h1 { font-size: clamp(2rem, 4vw, 2.6rem); }
+.legal section { scroll-margin-top: 90px; padding-top: 28px; margin-top: 28px; border-top: 1px solid var(--line); }
+.legal h2 { font-size: 1.6rem; }
+.legal h3 { font-family: var(--font-body); font-size: 1rem; font-weight: 800; margin: 20px 0 4px; }
+.legal p, .legal li { color: #554c5a; }
+.legal ul { padding-left: 20px; }
+.legal li { margin-bottom: 8px; }
+.legal a { color: var(--primary-dark); }
+.legal-toc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.legal-toc a { text-decoration: none; border: 2px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: .9rem; color: var(--ink); }
+.legal-toc a:hover { border-color: var(--ink); }

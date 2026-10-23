@@ -1,6 +1,7 @@
 /* =========================================================
-   SHOP SETTINGS — edit this file to change your shop.
-   No coding knowledge needed: just change the text between quotes.
+   SHOP SETTINGS
+   Day-to-day product and price changes happen in the Google Sheet
+   (see productsSheet below). This file holds settings that rarely change.
    ========================================================= */
 
 const SHOP = {
@@ -26,9 +27,19 @@ const SHOP = {
   instagram: "",   // e.g. "https://instagram.com/tinyblossom"
   facebook: "",    // e.g. "https://facebook.com/tinyblossom"
 
-  // Delivery / shipping charge added to every order
-  deliveryFee: 5.99,       // set to 0 for always-free shipping
-  freeDeliveryOver: 50,    // orders at or above this get free shipping; 0 turns this off
+  // Link to the Google Sheet that lists the products and prices.
+  // The sheet must be shared as "Anyone with the link: Viewer".
+  // If it can't be reached, the products listed at the bottom of this file are shown instead.
+  productsSheet: "https://docs.google.com/spreadsheets/d/1hCV8NAPxs6GK89541TshvlNX2kjkiQ3CDqMqhBYML5k/edit",
+
+  // Shipping and sales tax are worked out per order and texted to the customer
+  // to approve before they pay. Optionally offer free shipping above an amount
+  // (0 = off). Example: 75 means orders of $75+ ship free.
+  freeShippingOver: 0,
+
+  // Shown on the policies page
+  returnDays: 14,
+  policiesUpdated: "October 23, 2026",
 
   // Payment choices shown at checkout. Add, remove or rename freely.
   paymentOptions: [
@@ -38,7 +49,8 @@ const SHOP = {
 };
 
 /* =========================================================
-   PRODUCTS
+   BACKUP PRODUCTS
+   Shown only if the Google Sheet above is not set or can't be reached.
    - id: any unique short word (no spaces)
    - category: must match one of the CATEGORIES below
    - image: put a photo in the "images" folder and write e.g. "images/onesie.jpg".

@@ -63,7 +63,7 @@
       <div class="wrap">
         <div class="section-head">
           <h2>Shop our collection</h2>
-          <p>Tap any product to see details.</p>
+          <p>Tap any product to see details. Prices in USD; shipping &amp; tax are confirmed with you before you pay.</p>
         </div>
 
         <div class="toolbar">
@@ -81,7 +81,7 @@
           </div>
         </div>
 
-        <div class="grid" id="grid"></div>
+        <div class="grid" id="grid"><p class="loading">Loading products…</p></div>
         <p class="empty" id="empty" hidden>No products match your search. Try another word.</p>
       </div>
     </section>
@@ -102,10 +102,11 @@
       <div class="wrap narrow">
         <div class="section-head"><h2>Questions? We've got answers</h2></div>
         <details><summary>How do I place an order?</summary><p>Add items to your cart, tap <strong>Checkout</strong>, fill in your name, phone and address, then send. Your order comes to us by text message or WhatsApp, and we'll reply to confirm it and share payment details.</p></details>
-        <details><summary>How do I pay?</summary><p>After we confirm your order, you can pay with Zelle, Venmo, Cash App or PayPal. We ship once payment arrives.</p></details>
+        <details><summary>How much is shipping?</summary><p>Shipping depends on your address and the size of your order, so we work it out for each order. After you send your order, we'll text you the exact total (including shipping and any sales tax). You only pay once you've approved it.</p></details>
+        <details><summary>How do I pay?</summary><p>After you approve your total, you can pay with Zelle, Venmo, Cash App or PayPal. We ship once payment arrives.</p></details>
         <details><summary>How long does shipping take?</summary><p>Orders ship within 1–2 business days and usually arrive 3–5 days later. We'll send you tracking once it ships.</p></details>
-        <details><summary>Can I exchange a size?</summary><p>Yes. Unused items with tags can be exchanged within 14 days. Just message us.</p></details>
-        <details><summary>Are your products safe for newborns?</summary><p>We choose BPA-free, non-toxic and skin-friendly items. Each product page tells you more about the materials.</p></details>
+        <details><summary>Can I exchange a size?</summary><p>Yes. Unused items with tags can be exchanged or returned within <span data-return-days>14</span> days of delivery. Just message us. See our <a href="legal.html#returns">return policy</a>.</p></details>
+        <details><summary>Are your products safe for newborns?</summary><p>We choose BPA-free, non-toxic and skin-friendly items. Each product page tells you more about the materials. Please also read our <a href="legal.html#safety">safety tips</a>.</p></details>
       </div>
     </section>
 
@@ -123,7 +124,13 @@
   <footer class="footer">
     <div class="wrap footer-inner">
       <p>© <span id="year"></span> <span class="shop-name"></span>. Made with love.</p>
-      <p class="muted" id="footerLoc"></p>
+      <nav class="footer-links" aria-label="Policies">
+        <a href="legal.html#terms">Terms of Sale</a>
+        <a href="legal.html#shipping">Shipping</a>
+        <a href="legal.html#returns">Returns</a>
+        <a href="legal.html#privacy">Privacy</a>
+        <a href="legal.html#safety">Safety</a>
+      </nav>
     </div>
   </footer>
 
@@ -157,24 +164,25 @@
       <label>Shipping address<textarea name="address" rows="3" required autocomplete="street-address" placeholder="Street, apt, city, state, ZIP"></textarea></label>
       <label>Note (optional)<textarea name="note" rows="2" placeholder="Gift wrap, preferred time, etc."></textarea></label>
       <fieldset class="pay">
-        <legend>Payment</legend>
+        <legend>Payment (after you approve your total)</legend>
         <div id="payOptions"></div>
       </fieldset>
+      <label class="agree"><input type="checkbox" name="agree" required /> <span>I agree to the <a href="legal.html#terms" target="_blank">Terms of Sale</a> and understand shipping and any sales tax will be added and confirmed with me before I pay.</span></label>
       <p class="form-error" id="formError" role="alert"></p>
     </form>
 
     <div class="drawer-done drawer-body" id="doneView" hidden>
       <div class="big">💛</div>
       <h3>Thank you!</h3>
-      <p>Your order message is ready. Once you send it, we'll reply to confirm your order and delivery.</p>
+      <p>Your order message is ready. Once you send it, we'll text you back with your total, including shipping, for you to approve. Nothing is charged until you say yes.</p>
       <button class="btn btn-primary" id="doneBtn">Continue shopping</button>
     </div>
 
     <div class="drawer-foot" id="drawerFoot">
       <div class="totals">
-        <div><span>Subtotal</span><span id="subtotal"></span></div>
-        <div><span>Shipping</span><span id="delivery"></span></div>
-        <div class="grand"><span>Total</span><span id="total"></span></div>
+        <div><span>Shipping &amp; tax</span><span id="delivery"></span></div>
+        <div class="grand"><span>Items total</span><span id="total"></span></div>
+        <p class="ship-note">We'll text you your final total, including shipping, to approve before you pay.</p>
         <p class="free-note" id="freeNote"></p>
       </div>
       <button class="btn btn-primary btn-block" id="checkoutBtn">Checkout</button>
